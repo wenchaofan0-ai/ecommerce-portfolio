@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SKU经营诊断台</title>
+<meta name="description" content="面向采销与品类运营的SKU经营诊断工具：分析GMV、毛利、库存、评分与退货风险。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230b1f33'/%3E%3Cpath d='M14 44V31h8v13zm14 0V20h8v24zm14 0V12h8v32z' fill='%2300a7c4'/%3E%3C/svg%3E">
+<style>
+:root{--navy:#0b1f33;--ink:#102a43;--muted:#627d98;--cyan:#00a7c4;--cyan2:#dff8fb;--orange:#ff9f1c;--red:#d64545;--green:#00a676;--paper:#f4f7fa;--white:#fff;--line:#d9e2ec;--shadow:0 12px 36px rgba(11,31,51,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;font-size:16px}
+button,input,label{font:inherit}.top{background:var(--navy);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:13px}.mark{width:42px;height:42px;border-radius:10px;background:var(--cyan);display:grid;place-items:center;font-weight:900}.title{font-size:1.28rem;font-weight:800}.subtitle{font-size:.84rem;color:#b8c7d9;margin-top:3px}.privacy{font-size:.82rem;color:#b8c7d9}
+main{max-width:1440px;margin:auto;padding:22px 26px 40px}.toolbar{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:18px;display:grid;grid-template-columns:1.3fr 2fr auto;gap:18px;align-items:end}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;transition:.16s}.btn:hover{transform:translateY(-1px)}.primary{background:var(--cyan);color:#fff}.secondary{background:#e9f0f5;color:var(--ink)}.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}input[type=file]{display:none}
+.thresholds{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:10px}.field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:6px}.field input{width:100%;border:1px solid var(--line);border-radius:7px;padding:10px;background:#fbfdff;color:var(--ink)}
+.status{font-size:.84rem;color:var(--muted);text-align:right;align-self:center}.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:18px 0}.kpi{background:#fff;border:1px solid var(--line);padding:18px;min-height:118px;position:relative}.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--cyan)}.kpi:nth-child(4):before{background:var(--orange)}.kpi:nth-child(5):before{background:var(--red)}.kpi .label{color:var(--muted);font-size:.86rem;font-weight:700}.kpi .value{font-size:1.8rem;font-weight:900;margin-top:14px;color:var(--navy)}.kpi .note{font-size:.76rem;color:var(--muted);margin-top:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}.panel{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:18px}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.panel h2{font-size:1rem;margin:0;color:var(--navy)}.legend{font-size:.76rem;color:var(--muted)}canvas{width:100%;height:260px;display:block}
+.table-panel{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.table-tools{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:18px}.filters{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:.82rem}.chip.active{background:var(--navy);border-color:var(--navy);color:#fff}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1120px}th{background:var(--navy);color:#fff;text-align:left;padding:12px 13px;font-size:.82rem;position:sticky;top:0}td{padding:12px 13px;border-bottom:1px solid var(--line);font-size:.86rem}tbody tr:hover{background:#f5fbfc}.num{text-align:right;font-variant-numeric:tabular-nums}.tag{display:inline-block;border-radius:999px;padding:4px 8px;margin:2px;font-size:.72rem;font-weight:700}.danger{background:#fde8e8;color:#a61b1b}.warn{background:#fff1db;color:#9a5b00}.ok{background:#dcf5eb;color:#087953}.rec{max-width:260px;line-height:1.5}.empty{padding:58px;text-align:center;color:var(--muted)}
+.foot{margin-top:18px;padding:16px 18px;background:#eaf2f7;border-left:5px solid var(--cyan);font-size:.86rem;line-height:1.7;color:#405b73}
+@media(max-width:980px){.toolbar{grid-template-columns:1fr}.thresholds{grid-template-columns:repeat(2,1fr)}.status{text-align:left}.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.privacy{display:none}}@media(max-width:560px){main{padding:14px}.top{padding:15px}.kpis{grid-template-columns:1fr}.thresholds{grid-template-columns:1fr}.table-tools{align-items:flex-start;flex-direction:column}.title{font-size:1.05rem}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="mark">SKU</div><div><div class="title">SKU经营诊断台</div><div class="subtitle">采销 · 品类运营 · 经营分析</div></div></div>
+  <div class="privacy">数据仅在当前浏览器计算，不上传服务器</div>
+</header>
+<main>
+  <section class="toolbar" aria-label="数据和诊断设置">
+    <div class="actions">
+      <button class="btn primary" id="demoBtn">载入示例数据</button>
+      <label class="btn secondary" for="fileInput">上传CSV</label>
+      <input id="fileInput" type="file" accept=".csv,text/csv">
+      <button class="btn outline" id="exportBtn">导出诊断结果</button>
+    </div>
+    <div class="thresholds">
+      <div class="field"><label for="marginT">毛利率预警 &lt; %</label><input id="marginT" type="number" value="25" min="0" max="100"></div>
+      <div class="field"><label for="inventoryT">库存天数预警 &gt;</label><input id="inventoryT" type="number" value="45" min="1"></div>
+      <div class="field"><label for="returnT">退货率预警 &gt; %</label><input id="returnT" type="number" value="8" min="0" max="100"></div>
+      <div class="field"><label for="ratingT">评分预警 &lt;</label><input id="ratingT" type="number" value="4" min="0" max="5" step=".1"></div>
+    </div>
+    <div class="status" id="status">已载入示例数据</div>
+  </section>
+
+  <section class="kpis" aria-label="关键指标">
+    <article class="kpi"><div class="label">SKU数量</div><div class="value" id="kSku">0</div><div class="note">当前诊断范围</div></article>
+    <article class="kpi"><div class="label">商品GMV</div><div class="value" id="kGmv">¥0</div><div class="note">售价 × 近30天销量</div></article>
+    <article class="kpi"><div class="label">加权毛利率</div><div class="value" id="kMargin">0%</div><div class="note">按商品GMV加权</div></article>
+    <article class="kpi"><div class="label">高库存SKU</div><div class="value" id="kInventory">0</div><div class="note">超过库存天数阈值</div></article>
+    <article class="kpi"><div class="label">综合风险SKU</div><div class="value" id="kRisk">0</div><div class="note">命中两项及以上预警</div></article>
+  </section>
+
+  <section class="grid">
+    <article class="panel"><div class="panel-head"><h2>商品GMV Top 8</h2><span class="legend">近30天商品GMV</span></div><canvas id="gmvChart" aria-label="商品GMV排名图"></canvas></article>
+    <article class="panel"><div class="panel-head"><h2>价格带结构</h2><span class="legend">SKU数量与GMV</span></div><canvas id="bandChart" aria-label="价格带结构图"></canvas></article>
+  </section>
+
+  <section class="table-panel">
+    <div class="table-tools">
+      <div class="filters" id="filters">
+        <button class="chip active" data-filter="all">全部</button>
+        <button class="chip" data-filter="综合风险">综合风险</button>
+        <button class="chip" data-filter="高库存">高库存</button>
+        <button class="chip" data-filter="低毛利">低毛利</button>
+        <button class="chip" data-filter="高退货">高退货</button>
+        <button class="chip" data-filter="低评分">低评分</button>
+      </div>
+      <strong id="rowCount">0 个SKU</strong>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>SKU</th><th>商品</th><th>品类</th><th class="num">售价</th><th class="num">近30天销量</th><th class="num">GMV</th><th class="num">毛利率</th><th class="num">库存天数</th><th class="num">评分</th><th class="num">退货率</th><th>风险</th><th>建议动作</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+  <aside class="foot"><strong>数据口径：</strong>GMV＝售价×近30天销量；毛利率＝（售价－成本）÷售价；库存天数＝当前库存÷近30天日均销量。示例数据为模拟数据，仅用于展示工具能力。上传CSV需要字段：sku、product_name、category、price、cost、sales、inventory、rating、return_rate。</aside>
+</main>
+<script>
+const demo=[
+{sku:"CAR001",product_name:"重力出风口支架",category:"车载支架",price:29.9,cost:15.2,sales:860,inventory:520,rating:4.5,return_rate:4.2},
+{sku:"CAR002",product_name:"MagSafe磁吸支架",category:"车载支架",price:49.9,cost:31.5,sales:620,inventory:1180,rating:4.2,return_rate:7.8},
+{sku:"CAR003",product_name:"真空吸盘支架",category:"车载支架",price:69,cost:44,sales:260,inventory:980,rating:3.8,return_rate:12.6},
+{sku:"CAR004",product_name:"折叠仪表台支架",category:"车载支架",price:39.9,cost:17.8,sales:430,inventory:260,rating:4.6,return_rate:3.9},
+{sku:"CAR005",product_name:"无线充电支架",category:"车载支架",price:129,cost:91,sales:310,inventory:720,rating:4.1,return_rate:8.7},
+{sku:"CAR006",product_name:"后座平板支架",category:"车载支架",price:79,cost:38,sales:180,inventory:640,rating:4.4,return_rate:5.1},
+{sku:"CAR007",product_name:"车载快充充电器",category:"车载电器",price:59,cost:41,sales:740,inventory:390,rating:4.0,return_rate:6.8},
+{sku:"CAR008",product_name:"车载香薰补充装",category:"车载用品",price:35,cost:12,sales:950,inventory:1480,rating:4.7,return_rate:2.9},
+{sku:"CAR009",product_name:"多功能安全锤",category:"安全用品",price:45,cost:20,sales:210,inventory:760,rating:4.3,return_rate:3.4},
+{sku:"CAR010",product_name:"车载吸尘器",category:"车载电器",price:159,cost:118,sales:150,inventory:690,rating:3.7,return_rate:11.4},
+{sku:"CAR011",product_name:"座椅缝隙收纳盒",category:"车载用品",price:55,cost:22,sales:390,inventory:330,rating:4.5,return_rate:4.1},
+{sku:"CAR012",product_name:"车载遮阳挡",category:"车载用品",price:42,cost:18,sales:510,inventory:860,rating:4.1,return_rate:7.2}
+];
+let rows=demo.map(x=>({...x})),diagnosed=[],activeFilter="all";
+const $=id=>document.getElementById(id);
+const money=n=>"¥"+Math.round(n).toLocaleString("zh-CN");
+const pct=n=>(Number(n)||0).toFixed(1)+"%";
+function thresholds(){return{margin:+$("marginT").value,inventory:+$("inventoryT").value,returns:+$("returnT").value,rating:+$("ratingT").value};}
+function diagnose(r){
+ const t=thresholds(),price=+r.price||0,cost=+r.cost||0,sales=+r.sales||0,inventory=+r.inventory||0;
+ const gmv=price*sales,margin=price?100*(price-cost)/price:0,days=inventory/(Math.max(sales/30,.1)),risk=[];
+ if(margin<t.margin)risk.push("低毛利");if(days>t.inventory)risk.push("高库存");if((+r.return_rate||0)>t.returns)risk.push("高退货");if((+r.rating||0)<t.rating)risk.push("低评分");if(risk.length>=2)risk.unshift("综合风险");
+ let action="保持观察";if(risk.includes("综合风险"))action="暂停扩量，逐项排查成本、库存与体验";else if(risk.includes("高库存"))action="减少补货，设置清仓或组合促销";else if(risk.includes("低毛利"))action="谈判成本或调整促销";else if(risk.includes("高退货")||risk.includes("低评分"))action="复盘差评与商品适配";
+ return{...r,gmv,margin,inventory_days:days,risk,action};
+}
+function refresh(){
+ diagnosed=rows.map(diagnose);renderKpi();renderTable();drawCharts();$("status").textContent="已诊断 "+diagnosed.length+" 个SKU";
+}
+function renderKpi(){
+ const g=diagnosed.reduce((a,r)=>a+r.gmv,0),profit=diagnosed.reduce((a,r)=>a+r.gmv*r.margin/100,0);
+ $("kSku").textContent=diagnosed.length;$("kGmv").textContent=money(g);$("kMargin").textContent=pct(g?profit/g*100:0);
+ $("kInventory").textContent=diagnosed.filter(r=>r.risk.includes("高库存")).length;$("kRisk").textContent=diagnosed.filter(r=>r.risk.includes("综合风险")).length;
+}
+function tagClass(x){return x==="综合风险"||x==="高退货"||x==="低评分"?"danger":x==="高库存"||x==="低毛利"?"warn":"ok";}
+function renderTable(){
+ const list=activeFilter==="all"?diagnosed:diagnosed.filter(r=>r.risk.includes(activeFilter));
+ $("rowCount").textContent=list.length+" 个SKU";
+ $("tbody").innerHTML=list.length?list.map(r=>"<tr><td><strong>"+escapeHtml(r.sku)+"</strong></td><td>"+escapeHtml(r.product_name)+"</td><td>"+escapeHtml(r.category)+"</td><td class='num'>¥"+(+r.price).toFixed(2)+"</td><td class='num'>"+r.sales+"</td><td class='num'>"+money(r.gmv)+"</td><td class='num'>"+pct(r.margin)+"</td><td class='num'>"+r.inventory_days.toFixed(1)+"</td><td class='num'>"+(+r.rating).toFixed(1)+"</td><td class='num'>"+pct(r.return_rate)+"</td><td>"+(r.risk.length?r.risk.map(x=>"<span class='tag "+tagClass(x)+"'>"+x+"</span>").join(""):"<span class='tag ok'>正常</span>")+"</td><td class='rec'>"+r.action+"</td></tr>").join(""):"<tr><td colspan='12' class='empty'>当前筛选条件下没有SKU</td></tr>";
+}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+function setupCanvas(id){const c=$(id),d=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;const x=c.getContext("2d");x.scale(d,d);x.clearRect(0,0,w,h);return{x,w,h};}
+function drawBarChart(){
+ const {x,w,h}=setupCanvas("gmvChart"),data=[...diagnosed].sort((a,b)=>b.gmv-a.gmv).slice(0,8),max=Math.max(...data.map(r=>r.gmv),1),left=138,right=48,top=10,rowH=(h-20)/Math.max(data.length,1);
+ x.font="13px Microsoft YaHei";data.forEach((r,i)=>{const y=top+i*rowH+5,bw=(w-left-right)*r.gmv/max;x.fillStyle="#627d98";x.fillText(r.product_name.slice(0,9),4,y+15);x.fillStyle="#00a7c4";x.fillRect(left,y,bw,20);x.fillStyle="#102a43";x.fillText(Math.round(r.gmv/1000)+"k",Math.min(left+bw+7,w-34),y+15);});
+}
+function drawBandChart(){
+ const {x,w,h}=setupCanvas("bandChart"),bands=[["0-49",0,49.999],["50-99",50,99.999],["100-149",100,149.999],["150+",150,1e9]].map(b=>{const d=diagnosed.filter(r=>r.price>=b[1]&&r.price<=b[2]);return{name:b[0],count:d.length,gmv:d.reduce((a,r)=>a+r.gmv,0)};}),max=Math.max(...bands.map(b=>b.gmv),1),base=h-42,plot=h-72,bw=Math.min(66,(w-70)/bands.length-18);
+ x.font="13px Microsoft YaHei";bands.forEach((b,i)=>{const cx=45+i*(w-70)/bands.length,bar=b.gmv/max*plot;x.fillStyle=i===1?"#ff9f1c":"#2f6bff";x.fillRect(cx,base-bar,bw,bar);x.fillStyle="#102a43";x.fillText(b.name,cx,base+22);x.fillStyle="#627d98";x.fillText(b.count+"款",cx+4,Math.max(14,base-bar-8));});
+}
+function drawCharts(){drawBarChart();drawBandChart();}
+function parseCSV(text){
+ const out=[];let row=[],cell="",q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++;}else if(c==='"')q=false;else cell+=c;}else if(c==='"')q=true;else if(c===","){row.push(cell);cell="";}else if(c==="\n"){row.push(cell.replace(/\r$/,""));out.push(row);row=[];cell="";}else cell+=c;}if(cell||row.length){row.push(cell);out.push(row);}return out;
+}
+function loadCSV(text){
+ const a=parseCSV(text),head=a.shift().map(x=>x.trim().replace(/^\uFEFF/,"")),need=["sku","product_name","category","price","cost","sales","inventory","rating","return_rate"],missing=need.filter(x=>!head.includes(x));if(missing.length)throw new Error("缺少字段："+missing.join("、"));
+ rows=a.filter(r=>r.some(Boolean)).map(r=>Object.fromEntries(head.map((h,i)=>[h,r[i]])));refresh();
+}
+function exportCSV(){
+ const head=["sku","product_name","category","price","cost","sales","inventory","rating","return_rate","gmv","margin_pct","inventory_days","risk","recommendation"],vals=diagnosed.map(r=>[r.sku,r.product_name,r.category,r.price,r.cost,r.sales,r.inventory,r.rating,r.return_rate,r.gmv.toFixed(2),r.margin.toFixed(2),r.inventory_days.toFixed(1),r.risk.join("|"),r.action]);
+ const csv=[head,...vals].map(r=>r.map(v=>'"'+String(v??"").replaceAll('"','""')+'"').join(",")).join("\n"),blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="SKU经营诊断结果.csv";a.click();URL.revokeObjectURL(a.href);
+}
+$("demoBtn").onclick=()=>{rows=demo.map(x=>({...x}));activeFilter="all";document.querySelectorAll(".chip").forEach((c,i)=>c.classList.toggle("active",i===0));refresh();};
+$("fileInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{loadCSV(await f.text());$("status").textContent="已读取 "+f.name;}catch(err){$("status").textContent=err.message;}};
+$("exportBtn").onclick=exportCSV;["marginT","inventoryT","returnT","ratingT"].forEach(id=>$(id).addEventListener("input",refresh));
+$("filters").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;activeFilter=b.dataset.filter;document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active",c===b));renderTable();};
+addEventListener("resize",()=>{clearTimeout(window._resize);window._resize=setTimeout(drawCharts,100);});
+
+function registerWebMCP(){
+ const c=document.modelContext;if(!c?.registerTool)return;
+ const safe=(p,k,min,max)=>{const v=Number(p[k]);if(!Number.isFinite(v)||v<min||v>max)throw new Error(k+"超出范围");return v;};
+ Promise.resolve(c.registerTool({name:"load_demo_data",title:"载入示例SKU",description:"载入内置示例SKU并刷新经营诊断结果。",inputSchema:{type:"object",properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(){rows=demo.map(x=>({...x}));refresh();return{sku_count:diagnosed.length,status:"loaded"};}})).catch(()=>{});
+ Promise.resolve(c.registerTool({name:"set_risk_thresholds",title:"设置风险阈值",description:"设置毛利率、库存天数、退货率和评分阈值，并刷新诊断。",inputSchema:{type:"object",properties:{margin_pct:{type:"number",minimum:0,maximum:100},inventory_days:{type:"number",minimum:1,maximum:999},return_rate_pct:{type:"number",minimum:0,maximum:100},rating:{type:"number",minimum:0,maximum:5}},required:["margin_pct","inventory_days","return_rate_pct","rating"],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(p){$("marginT").value=safe(p,"margin_pct",0,100);$("inventoryT").value=safe(p,"inventory_days",1,999);$("returnT").value=safe(p,"return_rate_pct",0,100);$("ratingT").value=safe(p,"rating",0,5);refresh();return{thresholds:thresholds(),risk_skus:diagnosed.filter(r=>r.risk.includes("综合风险")).length};}})).catch(()=>{});
+ Promise.resolve(c.registerTool({name:"get_diagnosis_summary",title:"读取诊断摘要",description:"读取当前SKU数量、GMV、加权毛利率和风险SKU数量。",inputSchema:{type:"object",properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(){const g=diagnosed.reduce((a,r)=>a+r.gmv,0),p=diagnosed.reduce((a,r)=>a+r.gmv*r.margin/100,0);return{sku_count:diagnosed.length,gmv:+g.toFixed(2),weighted_margin_pct:+(g?p/g*100:0).toFixed(2),high_inventory_skus:diagnosed.filter(r=>r.risk.includes("高库存")).length,combined_risk_skus:diagnosed.filter(r=>r.risk.includes("综合风险")).length};}})).catch(()=>{});
+}
+refresh();registerWebMCP();
+</script>
+</body>
+</html>

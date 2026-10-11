@@ -10,7 +10,7 @@
 
 ## 汽车产品原型
 
-- [打开车商线索与车源匹配助手](https://wenchaofan0-ai.github.io/ecommerce-portfolio/used-car-matcher/)：用模拟线索和车源演示需求整理、规则匹配、待追问与人工核验提示。原型未接入真实业务数据。
+- [打开车商线索与车源匹配助手](https://wenchaofan0-ai.github.io/ecommerce-portfolio/used-car-matcher/index.html)：用模拟线索和车源演示需求整理、规则匹配、待追问与人工核验提示。原型未接入真实业务数据。
 - [查看项目说明与PRD](projects/03-used-car-lead-matching/README.md)
 
 ## 作品附件与代码

@@ -8,6 +8,11 @@
 
 内置 12 个模拟 SKU，支持 CSV 上传、风险阈值调整、商品筛选、图表和诊断结果导出。数据仅在浏览器内处理，无需账号或 API Key。
 
+## 汽车产品原型
+
+- [打开车商线索与车源匹配助手](https://wenchaofan0-ai.github.io/ecommerce-portfolio/used-car-matcher/)：用模拟线索和车源演示需求整理、规则匹配、待追问与人工核验提示。原型未接入真实业务数据。
+- [查看项目说明与PRD](projects/03-used-car-lead-matching/README.md)
+
 ## 作品附件与代码
 
 - [下载作品附件](portfolio-attachments.zip)：车载手机支架选品 Excel、汇报 PPT、Olist SQL 分析工作簿、SKU 工具。

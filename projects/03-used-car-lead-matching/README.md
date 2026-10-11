@@ -4,7 +4,7 @@
 
 ## 在线演示
 
-[打开车商线索与车源匹配助手](https://wenchaofan0-ai.github.io/ecommerce-portfolio/used-car-matcher/)
+[打开车商线索与车源匹配助手](https://wenchaofan0-ai.github.io/ecommerce-portfolio/used-car-matcher/index.html)
 
 ## 运行
 
